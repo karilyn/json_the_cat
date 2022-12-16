@@ -1,17 +1,17 @@
 const request = require('request');
 
 // let breedId = 'sibe';
-const BASE_URL = 'https://api.thecatapi.com/v1/';
+
+const breedName = (process.argv[2]);
 
 // allow user to specify breed with command line arg
-printBreed(process.argv[2]);
 
-function printBreed(breedId) {
+const fetchBreedDescription = function(breedName, callback) {
+  const url = 'https://api.thecatapi.com/v1/breeds/';
+  request(url + breedName, (error, response, body) => {
 
-  request(BASE_URL + "breeds/" + breedId, (error, response, body) => {
-    // handling request error
     if (error) {
-      console.log('error: ', error); // print the error if one occured
+      callback(`request failed: ${error}`, null); // print the error if one occured
     // console.log('statusCode: ', response && response.statusCode);
     // console.log('body: ', body); // prints the HTML
     // console.log(typeof body)
@@ -19,11 +19,13 @@ function printBreed(breedId) {
     const data = JSON.parse(body);
     // handling breed not found error
     if (!data['name']) {
-      console.log("breed not found");
+      callback(error, "breed not found");
+
     } else {
-      console.log(data.name);
+      callback(null, data.description);
     }
   });
-}
+};
 
 
+module.exports = { fetchBreedDescription };
